@@ -1,0 +1,22 @@
+# Python 3.10 / 3.11. Montreal Forced Aligner is installed separately (conda), see README.
+torch>=2.1
+numpy>=1.24,<2
+scipy
+librosa>=0.10
+numba
+pyworld>=0.3.4
+soundfile
+scikit-learn
+tgt
+g2p-en
+inflect
+unidecode
+num2words
+pypinyin
+PyYAML
+tqdm
+matplotlib
+tensorboard
+datasets[audio]>=2.19,<4
+huggingface_hub
+pandas

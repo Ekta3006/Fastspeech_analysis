@@ -1,0 +1,93 @@
+# FastSpeech 2 - English (Svarah). Single config replacing the base repo's
+# preprocess.yaml / model.yaml / train.yaml (sections below keep the same keys).
+
+data:
+  hf_dataset: "ai4bharat/Svarah"      # gated: needs HF_TOKEN env var
+  hf_split: "test"                    # Svarah ships only a 'test' split; we re-split it ourselves
+  seed: 1234
+  train_hours: 5.0
+  val_hours: 1.0
+  min_duration: 1.0                   # seconds; drop clips shorter/longer than this
+  max_duration: 12.0
+  min_chars: 5
+  speaker_by: "gender"                # Svarah has no speaker id -> pseudo-speaker = gender
+  raw_path: "./raw_data/Svarah"
+  split_path: "./preprocessed_data/Svarah/split.json"
+
+preprocess:
+  dataset: "Svarah"
+  path:
+    corpus_path: "./raw_data/Svarah"
+    lexicon_path: "lexicon/librispeech-lexicon.txt"
+    raw_path: "./raw_data/Svarah"
+    preprocessed_path: "./preprocessed_data/Svarah"
+  preprocessing:
+    val_size: 0                       # unused: split comes from data.split_path
+    text:
+      text_cleaners: ["english_cleaners"]
+      language: "en"
+    audio:
+      sampling_rate: 22050
+      max_wav_value: 32768.0
+    stft:
+      filter_length: 1024
+      hop_length: 256
+      win_length: 1024
+    mel:
+      n_mel_channels: 80
+      mel_fmin: 0
+      mel_fmax: 8000
+    pitch:
+      feature: "phoneme_level"
+      normalization: True
+    energy:
+      feature: "phoneme_level"
+      normalization: True
+
+model:
+  transformer:
+    encoder_layer: 4
+    encoder_head: 2
+    encoder_hidden: 256
+    decoder_layer: 6
+    decoder_head: 2
+    decoder_hidden: 256
+    conv_filter_size: 1024
+    conv_kernel_size: [9, 1]
+    encoder_dropout: 0.2
+    decoder_dropout: 0.2
+  variance_predictor:
+    filter_size: 256
+    kernel_size: 3
+    dropout: 0.5
+  variance_embedding:
+    pitch_quantization: "linear"
+    energy_quantization: "linear"
+    n_bins: 256
+  multi_speaker: True                 # 2 pseudo-speakers (male / female)
+  max_seq_len: 1000
+  vocoder:
+    model: "HiFi-GAN"
+    speaker: "universal"
+
+train:
+  path:
+    ckpt_path: "./checkpoints"
+    log_path: "./output/log"
+    result_path: "./output/result"
+  optimizer:
+    batch_size: 16
+    betas: [0.9, 0.98]
+    eps: 0.000000001
+    weight_decay: 0.0
+    grad_clip_thresh: 1.0
+    grad_acc_step: 1
+    warm_up_step: 2000
+    anneal_steps: [20000, 26000]
+    anneal_rate: 0.3
+  step:
+    total_step: 30000
+    log_step: 50
+    synth_step: 1000
+    val_step: 500
+    save_step: 5000

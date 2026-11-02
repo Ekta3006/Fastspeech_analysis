@@ -1,0 +1,9 @@
+base/
+__pycache__/
+*.pyc
+raw_data/
+preprocessed_data/
+output/
+*.wav.tmp
+.DS_Store
+*.pth.tar.zip
