@@ -1,6 +1,6 @@
 # Python 3.10 / 3.11. Montreal Forced Aligner is installed separately (conda), see README.
 torch>=2.1
-numpy>=1.24
+numpy>=2.0,<2.3  # numba (via librosa) needs <2.3; Kaggle preinstalls need >=2
 scipy
 librosa>=0.10
 numba
